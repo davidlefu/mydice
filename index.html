@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dice Roller</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #1a202c;
+      }
+      .dice {
+        width: 80px;
+        height: 80px;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        border-radius: 12px;
+        border: 2px solid #ccc;
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
+      }
+      .dot {
+        width: 15px;
+        height: 15px;
+        background-color: #333;
+        border-radius: 50%;
+        position: absolute;
+      }
+      /* Face positions */
+      .face-1 .dot {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .face-2 .dot:nth-child(1) {
+        top: 20%;
+        left: 20%;
+      }
+      .face-2 .dot:nth-child(2) {
+        bottom: 20%;
+        right: 20%;
+      }
+      .face-3 .dot:nth-child(1) {
+        top: 20%;
+        left: 20%;
+      }
+      .face-3 .dot:nth-child(2) {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .face-3 .dot:nth-child(3) {
+        bottom: 20%;
+        right: 20%;
+      }
+      .face-4 .dot:nth-child(1) {
+        top: 20%;
+        left: 20%;
+      }
+      .face-4 .dot:nth-child(2) {
+        top: 20%;
+        right: 20%;
+      }
+      .face-4 .dot:nth-child(3) {
+        bottom: 20%;
+        left: 20%;
+      }
+      .face-4 .dot:nth-child(4) {
+        bottom: 20%;
+        right: 20%;
+      }
+      .face-5 .dot:nth-child(1) {
+        top: 20%;
+        left: 20%;
+      }
+      .face-5 .dot:nth-child(2) {
+        top: 20%;
+        right: 20%;
+      }
+      .face-5 .dot:nth-child(3) {
+        bottom: 20%;
+        left: 20%;
+      }
+      .face-5 .dot:nth-child(4) {
+        bottom: 20%;
+        right: 20%;
+      }
+      .face-5 .dot:nth-child(5) {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .face-6 .dot:nth-child(1) {
+        top: 20%;
+        left: 20%;
+      }
+      .face-6 .dot:nth-child(2) {
+        top: 50%;
+        left: 20%;
+        transform: translateY(-50%);
+      }
+      .face-6 .dot:nth-child(3) {
+        bottom: 20%;
+        left: 20%;
+      }
+      .face-6 .dot:nth-child(4) {
+        top: 20%;
+        right: 20%;
+      }
+      .face-6 .dot:nth-child(5) {
+        top: 50%;
+        right: 20%;
+        transform: translateY(-50%);
+      }
+      .face-6 .dot:nth-child(6) {
+        bottom: 20%;
+        right: 20%;
+      }
+      .dice.rolling {
+        animation: roll-animation 0.5s infinite;
+      }
+      @keyframes roll-animation {
+        0% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotateX(90deg) rotateY(180deg);
+        }
+        50% {
+          transform: rotateY(90deg) rotateZ(270deg);
+        }
+        75% {
+          transform: rotateX(270deg) rotateY(90deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center min-h-screen p-4"
+  >
+    <div
+      class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center"
+    >
+      <h1 class="text-4xl font-bold mb-6 text-yellow-400">Dice Roller</h1>
+
+      <!-- Dice Count Control -->
+      <div class="flex items-center justify-center space-x-4 mb-8">
+        <button
+          id="decrease-dice"
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl shadow-md"
+        >
+          -
+        </button>
+        <span class="text-3xl font-bold" id="dice-count">1</span>
+        <button
+          id="increase-dice"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl shadow-md"
+        >
+          +
+        </button>
+      </div>
+
+      <!-- Dice Display Area -->
+      <div
+        id="dice-container"
+        class="flex flex-wrap justify-center gap-6 p-4 rounded-xl bg-gray-700 min-h-[120px] mb-8 shadow-inner"
+      ></div>
+
+      <!-- Total Result Display -->
+      <div class="mb-8">
+        <span class="text-2xl font-semibold text-gray-400">Total: </span>
+        <span id="total-result" class="text-4xl font-extrabold text-yellow-300"
+          >0</span
+        >
+      </div>
+
+      <!-- Roll Button -->
+      <button
+        id="roll-button"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-3 px-12 rounded-full shadow-lg animate-pulse"
+      >
+        Roll 'em!
+      </button>
+    </div>
+
+    <script>
+      const diceContainer = document.getElementById("dice-container");
+      const rollButton = document.getElementById("roll-button");
+      const increaseButton = document.getElementById("increase-dice");
+      const decreaseButton = document.getElementById("decrease-dice");
+      const diceCountSpan = document.getElementById("dice-count");
+      const totalResultSpan = document.getElementById("total-result");
+      let diceCount = 1;
+      let isRolling = false;
+
+      function createDice() {
+        const diceDiv = document.createElement("div");
+        diceDiv.classList.add("dice");
+        diceDiv.dataset.value = 1;
+
+        const dotContainer = document.createElement("div");
+        dotContainer.classList.add("face-1", "relative", "w-full", "h-full");
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        dotContainer.appendChild(dot);
+        diceDiv.appendChild(dotContainer);
+
+        return diceDiv;
+      }
+
+      function updateDiceFace(dice, value) {
+        const dotContainer = dice.querySelector("div");
+        dotContainer.innerHTML = "";
+        dotContainer.className = `face-${value} relative w-full h-full`;
+
+        for (let i = 0; i < value; i++) {
+          const dot = document.createElement("div");
+          dot.classList.add("dot");
+          dotContainer.appendChild(dot);
+        }
+      }
+
+      function renderDice() {
+        diceContainer.innerHTML = "";
+        for (let i = 0; i < diceCount; i++) {
+          diceContainer.appendChild(createDice());
+        }
+        updateTotal();
+      }
+
+      function updateTotal() {
+        let total = 0;
+        const diceElements = diceContainer.querySelectorAll(".dice");
+        diceElements.forEach((dice) => {
+          total += parseInt(dice.dataset.value);
+        });
+        totalResultSpan.textContent = total;
+      }
+
+      renderDice();
+
+      increaseButton.addEventListener("click", () => {
+        if (diceCount < 10) {
+          diceCount++;
+          diceCountSpan.textContent = diceCount;
+          renderDice();
+        }
+      });
+
+      decreaseButton.addEventListener("click", () => {
+        if (diceCount > 1) {
+          diceCount--;
+          diceCountSpan.textContent = diceCount;
+          renderDice();
+        }
+      });
+
+      rollButton.addEventListener("click", () => {
+        if (isRolling) return;
+        isRolling = true;
+        rollButton.textContent = "Rolling...";
+        rollButton.disabled = true;
+        rollButton.classList.remove("animate-pulse");
+
+        const diceElements = diceContainer.querySelectorAll(".dice");
+        diceElements.forEach((dice) => {
+          dice.classList.add("rolling");
+        });
+
+        let rollInterval = setInterval(() => {
+          diceElements.forEach((dice) => {
+            const randomValue = Math.floor(Math.random() * 6) + 1;
+            dice.dataset.value = randomValue;
+            updateDiceFace(dice, randomValue);
+          });
+        }, 100);
+
+        setTimeout(() => {
+          clearInterval(rollInterval);
+          diceElements.forEach((dice) => {
+            dice.classList.remove("rolling");
+            const finalValue = Math.floor(Math.random() * 6) + 1;
+            dice.dataset.value = finalValue;
+            updateDiceFace(dice, finalValue);
+          });
+
+          updateTotal();
+          isRolling = false;
+          rollButton.textContent = "Roll 'em!";
+          rollButton.disabled = false;
+          rollButton.classList.add("animate-pulse");
+        }, 2000);
+      });
+
+      window.addEventListener("load", () => {
+        const diceElements = diceContainer.querySelectorAll(".dice");
+        diceElements.forEach((dice) => {
+          dice.dataset.value = 1;
+          updateDiceFace(dice, 1);
+        });
+        updateTotal();
+      });
+    </script>
+  </body>
+</html>
